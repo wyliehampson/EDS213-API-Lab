@@ -1,0 +1,106 @@
+---
+title: "EDS 213 API Lab"
+author: "Wylie Hampson"
+date: "10/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dataRetrieval)
+library(tidyverse)
+library(here)
+```
+# Exercise 1
+## Part 1
+### Read in the data.
+
+```{r}
+# Ventura River near Ventura, CA:
+siteNumber <- "11118500"
+parameterCd <- "00060" # Discharge
+startDate <- "2019-10-01"
+endDate <- "2020-10-05"
+
+discharge <- readNWISdv(siteNumber, parameterCd, startDate, endDate) %>% 
+  renameNWISColumns()
+
+```
+
+```{r}
+statInfo <- attr(discharge, "statisticInfo")
+variableInfo <- attr(discharge, "variableInfo")
+siteInfo <- attr(discharge, "siteInfo")
+
+
+ggplot(data = discharge, aes(x = Date, y = Flow)) +
+  geom_line()
+```
+
+## Part 2: When did the data start
+### Same code without a start date.
+
+```{r}
+siteNumber <- "11118500"
+parameterCd <- "00060" # Discharge
+startDate <- ""
+endDate <- "2020-10-05"
+
+discharge_start <- readNWISdv(siteNumber, parameterCd, startDate, endDate) %>% 
+  renameNWISColumns()
+
+```
+
+```{r}
+statInfo_start <- attr(discharge_start, "statisticInfo")
+variableInfo_start <- attr(discharge_start, "variableInfo")
+siteInfo_start <- attr(discharge_start, "siteInfo")
+
+
+ggplot(data = discharge_start, aes(x = Date, y = Flow)) +
+  geom_line()
+```
+# Exercise 2
+### Attcach metajam
+```{r}
+library(metajam)
+```
+
+### Download the data.
+```{r, error = TRUE}
+data_obj <- "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3A7fc6f6db-c5ea-426a-a743-1f2edafb43b8"
+path <- here("data")
+
+# Download the data
+download_d1_data(data_obj, path)
+```
+
+### Read in the data
+
+```{r}
+# Set the data path
+data_path <- here("data", "doi_10.5063_F1CJ8BPH__household_language__csv")
+
+# Read in the data
+my_data <- read_d1_files(data_path)
+
+# Get the household dataframe
+hh_data <- my_data$data
+
+```
+
+### Find some statistics and plot it!
+
+```{r}
+# Find the percentage of Alaskan households that spoke only English
+
+```
+
+
+
+
+
+
+
+
+
