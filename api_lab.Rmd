@@ -12,8 +12,8 @@ library(tidyverse)
 library(here)
 ```
 # Exercise 1
-## Part 1
-### Read in the data.
+### Part 1
+Read in the creek data.
 
 ```{r}
 # Ventura River near Ventura, CA:
@@ -22,23 +22,23 @@ parameterCd <- "00060" # Discharge
 startDate <- "2019-10-01"
 endDate <- "2020-10-05"
 
-discharge <- readNWISdv(siteNumber, parameterCd, startDate, endDate) %>% 
+discharge_ventura <- readNWISdv(siteNumber, parameterCd, startDate, endDate) %>% 
   renameNWISColumns()
 
 ```
 
 ```{r}
-statInfo <- attr(discharge, "statisticInfo")
-variableInfo <- attr(discharge, "variableInfo")
-siteInfo <- attr(discharge, "siteInfo")
+statInfo <- attr(discharge_ventura, "statisticInfo")
+variableInfo <- attr(discharge_ventura, "variableInfo")
+siteInfo <- attr(discharge_ventura, "siteInfo")
 
 
-ggplot(data = discharge, aes(x = Date, y = Flow)) +
+ggplot(data = discharge_ventura, aes(x = Date, y = Flow)) +
   geom_line()
 ```
 
-## Part 2: When did the data start
-### Same code without a start date.
+### Part 2: When did the data start
+Same code without a start date.
 
 ```{r}
 siteNumber <- "11118500"
@@ -60,8 +60,50 @@ siteInfo_start <- attr(discharge_start, "siteInfo")
 ggplot(data = discharge_start, aes(x = Date, y = Flow)) +
   geom_line()
 ```
-# Exercise 2
+
+# Assignment 2.1
+## Compare the Ventura river to the Santa Paula Creek.
+
+We will want to pull in data to look at the rainfall that took place on Oct/04/2021.
+
+### Read in the Santa Paula Creek data.
+
+(Assignment 2.1 question 2): What is the best way to query multiple sites using this R package?
+**The best way to query multiple sites at once would be to create a vector for the siteNumbers argument in the readNWISdv function. Demonstrated below:**
+
+```{r}
+# Query data for Ventura River (Site num. 11118500) and Santa Paula Creek (Site num. 11113500) into one data frame.
+siteNumber_both <- c("11118500", "11113500")
+parameterCd <- "00060" # Discharge
+startDate <- "2021-10-03"
+endDate <- "2021-10-05"
+
+discharge_both <- readNWISuv(siteNumber_both, parameterCd, startDate, endDate) %>% 
+  renameNWISColumns()
+
+# Now plot the data to compare the streamflow discharge of the two sites.
+ggplot(data = discharge_both, aes(x = dateTime, y = Flow_Inst)) +
+  geom_line(aes(col = site_no)) +
+  labs(title = "Discharge Rates from Ventura River and Santa Paula Creek",
+       subtitle = " (10/4/21 - 10/6/21)",
+       x = "Date and Time",
+       y = "Discharge, Cubic Feet per Second") +
+  annotate("text",
+           label = "                Rain Event",
+           x = discharge_both$dateTime[3],
+           y = 0.65,
+           size = 2.5) +
+  scale_color_manual(labels = c("Santa Paula Creek", "Ventura River"), values = c("red", "blue")) +
+  guides(color = guide_legend("Site"))
+
+```
+
+(Assignment 2.1 question 3): Determine at what time did the stream flow peaked (if any) at the two locations?
+**The above plot shows the hourly flow rates for botht the Santa Paula Creek and the Ventura River. After the rain event that took place on Oct 4th, 2021, there was a peak in the stream flow discharge in the Santa Paula Creek just before 12 P.M. (noon) on October 5th, 2021. The Ventura River had a slight increase in overall discharge on Oct 5th, but not major peaks.**
+
+# Exercise 2 (Assignment 2.2)
 ### Attcach metajam
+
 ```{r}
 library(metajam)
 ```
@@ -124,12 +166,19 @@ bar_percent <- ggplot(data = hh_data, aes(x = Year, y = english_only_percent)) +
   scale_x_continuous(labels = as.character(hh_data$Year), breaks = hh_data$Year)
 
 bar_percent
+
+# A line graph is a bit better for comparing the change from year to year since the overall change isn't very drastic.
+line_percent <- ggplot(data = hh_data, aes(x = Year, y = english_only_percent)) +
+  geom_line() +
+  geom_point() +
+  ylim(76.5, 78) +
+  scale_x_continuous(labels = as.character(hh_data$Year), breaks = hh_data$Year) +
+  labs(title = "Percentage of English Speaking Only Households in Alaska 2009-2015",
+       x = "Year",
+       y = "Percent (%)")
+
+line_percent
 ```
-
-
-
-
-
 
 
 
