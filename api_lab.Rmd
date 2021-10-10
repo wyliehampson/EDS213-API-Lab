@@ -93,9 +93,38 @@ hh_data <- my_data$data
 
 ```{r}
 # Find the percentage of Alaskan households that spoke only English
+# Filter out only the data from 2009 to 2015
+hh_data <- hh_data %>% 
+  filter(Year >= 2009)
+
+# To find the percentage of households that speak only English, divide the speak_only_english data by the total data. First group by the year, and sum up the total households and English only households.
+
+hh_data <- hh_data %>% 
+  group_by(Year) %>% 
+  summarize(total = sum(total), speak_only_english = sum(speak_only_english))
+
+# Add a column to show the percentage of English only speaking households per year.
+hh_data <- hh_data %>% 
+  mutate(english_only_percent = round(((speak_only_english / total) * 100), 2))
+
+hh_data
 
 ```
 
+```{r}
+
+# Now make a plot.
+bar_percent <- ggplot(data = hh_data, aes(x = Year, y = english_only_percent)) +
+  geom_bar(stat = "identity", fill = "darkolivegreen4") +
+  geom_text(aes(label = paste0(english_only_percent, "%")), vjust = -0.5) +
+  ylim(0, 100) +
+  labs(title = "Percentage of English Speaking Only Households in Alaska 2009-2015",
+       x = "Year",
+       y = "Percent (%)") +
+  scale_x_continuous(labels = as.character(hh_data$Year), breaks = hh_data$Year)
+
+bar_percent
+```
 
 
 
