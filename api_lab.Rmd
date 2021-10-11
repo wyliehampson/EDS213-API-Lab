@@ -88,11 +88,6 @@ ggplot(data = discharge_both, aes(x = dateTime, y = Flow_Inst)) +
        subtitle = " (10/4/21 - 10/6/21)",
        x = "Date and Time",
        y = "Discharge, Cubic Feet per Second") +
-  annotate("text",
-           label = "                Rain Event",
-           x = discharge_both$dateTime[3],
-           y = 0.65,
-           size = 2.5) +
   scale_color_manual(labels = c("Santa Paula Creek", "Ventura River"), values = c("red", "blue")) +
   guides(color = guide_legend("Site"))
 
